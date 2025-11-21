@@ -2,16 +2,16 @@
 
 set -ouex pipefail
 
-### Install packages
+### Install packages from Fedora repos
+FEDORA_PACKAGES=(
+    tmux
+)
 
-# Packages can be installed from any enabled yum repo on the image.
-# RPMfusion repos are available by default in ublue main images
-# List of rpmfusion packages can be found here:
-# https://mirrors.rpmfusion.org/mirrorlist?path=free/fedora/updates/39/x86_64/repoview/index.html&protocol=https&redirect=1
+echo "Installing ${#FEDORA_PACKAGES[@]} packages from Fedora repos..."
+dnf5 -y install "${FEDORA_PACKAGES[@]}"
 
-# this installs a package from fedora repos
-dnf5 install -y tmux 
 
+### Install packages from COPR
 # Use a COPR Example:
 #
 # dnf5 -y copr enable ublue-os/staging
@@ -19,6 +19,11 @@ dnf5 install -y tmux
 # Disable COPRs so they don't end up enabled on the final image:
 # dnf5 -y copr disable ublue-os/staging
 
-#### Example for enabling a System Unit File
+# Install newer OpenConnect version.
+dnf5 -y copr enable "dwmw2/openconnect"
+dnf5 -y install "openconnect" "NetworkManager-openconnect"
+dnf5 -y copr disable "dwmw2/openconnect" 
 
-systemctl enable podman.socket
+
+### Cleanup
+dnf5 clean all
