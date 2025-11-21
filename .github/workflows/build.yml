@@ -106,10 +106,19 @@ jobs:
           sep-tags: " "
           sep-annotations: " "
 
-      - name: Check Disk Usage
+      - name: Clean Up Disk Space
         id: disk_usage
+        if: runner.os == 'Linux'
         run: |
-          df -h 
+          # Space usage before cleanup
+          df -h /
+
+          # Remove unused tool caches
+          sudo rm -rf /usr/local/lib/android
+          sudo rm -rf /usr/share/dotnet
+
+          # Verify gains
+          df -h /
 
       - name: Build Image
         id: build_image
